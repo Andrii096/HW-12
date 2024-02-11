@@ -198,40 +198,6 @@ def main():
             print("How can I help you?")
         elif command.startswith("add "):
             _, name, phone = command.split()
-            print(add_contact(book, name, phone))
-        elif command.startswith("change "):
-            _, name, phone = command.split()
-            print(change_phone(book, name, phone))
-        elif command.startswith("phone "):
-            _, name = command.split(maxsplit=1)
-            print(show_phone(book, name))
-        elif command == "show all":
-            print(show_all(book))
-        elif command.startswith("find "):
-            _, name = command.split(maxsplit=1)
-            print(find_contact(book, name))
-        elif command in ["good bye", "close", "exit"]:
-            book.save(filename)
-            print("Good bye!")
-            break
-        else:
-            print("I don't understand this command!")
-
-def main():
-    filename = 'address_book.pkl'
-    try:
-        with open(filename, 'rb'):
-            book = AddressBook.load(filename)
-    except FileNotFoundError:
-        book = AddressBook()
-
-    while True:
-        command = input("Enter command: ").lower()
-        
-        if command == "hello":
-            print("How can I help you?")
-        elif command.startswith("add "):
-            _, name, phone = command.split()
             record = Record(name)
             record.add_phone(phone)
             book.add_record(record)
