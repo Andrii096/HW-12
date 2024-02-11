@@ -220,6 +220,9 @@ def main():
         elif command == "show all":
             for record in book.data.values():
                 print(record)
+        elif command.startswith("find "):
+            _, name = command.split(maxsplit=1)
+            print(find_contact(book, name))
         elif command in ["good bye", "close", "exit"]:
             book.save(filename)
             print("Good bye!")
