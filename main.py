@@ -1,6 +1,6 @@
 from collections import UserDict
-import re
 from datetime import datetime, timedelta
+import re
 import pickle
 
 class Field:
@@ -29,6 +29,12 @@ class Name(Field):
     pass
 
 class Phone(Field):
+
+    def __init__(self, value):
+        if not self.is_valid(value):
+            raise ValueError("Invalid phone number")
+        super().__init__(value)
+
     def is_valid(self, value):
         return value is not None and len(value) == 10 and value.isdigit()
 
@@ -105,6 +111,12 @@ class AddressBook(UserDict):
     def delete(self, name):
         if name in self.data:
             del self.data[name]
+            
+    def __str__(self):
+        result = ""
+        for record in self.data.values():
+            result += str(record) + "\n"
+        return result.strip()
 
     def iterator(self, n):
         records = list(self.data.values())
@@ -124,20 +136,62 @@ class AddressBook(UserDict):
         return address_book
 
 
-book = AddressBook()
 
-john_record = Record("John", "1996-01-01")
-john_record.add_phone("1234567890")
-john_record.add_phone("1111111111")
-book.add_record(john_record)
+def input_error(func):
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except KeyError:
+            return "There's no such name!"
+        except ValueError:
+            return "Enter valid command!"
+        except IndexError:
+            return "Give me name and phone please"
+    return inner
 
-jane_record = Record("Jane")
-jane_record.add_phone("0982422277")
-book.add_record(jane_record)
+def main():
+    filename = 'address_book.pkl'
+    try:
+        with open(filename, 'rb'):
+            book = AddressBook.load(filename)
+    except FileNotFoundError:
+        book = AddressBook()
 
-# Print all records
-for record in book.iterator(1):
-    print(record)
+    while True:
+        command = input("Enter command: ").lower()
+        
+        if command == "hello":
+            print("How can I help you?")
+        elif command.startswith("add "):
+            _, name, phone = command.split()
+            record = Record(name)
+            record.add_phone(phone)
+            book.add_record(record)
+            print(f'Contact {name.capitalize()} has been saved!')
+        elif command.startswith("change "):
+            _, name, phone = command.split()
+            record = book.find(name)
+            if record:
+                record.edit_phone(record.phones[0].value, phone)
+                print(f'Phone number for {name.capitalize()} has been changed!')
+            else:
+                print(f"No contact named {name.capitalize()}.")
+        elif command.startswith("phone "):
+            _, name = command.split(maxsplit=1)
+            record = book.find(name)
+            if record:
+                print(record.phones[0].value)
+            else:
+                print(f"No contact named {name.capitalize()}.")
+        elif command == "show all":
+            for record in book.data.values():
+                print(record)
+        elif command in ["good bye", "close", "exit"]:
+            book.save(filename)
+            print("Good bye!")
+            break
+        else:
+            print("I don't understand this command!")
 
-# Days to John's next birthday
-print(john_record.days_to_birthday())
+if __name__ == "__main__":
+    main()
