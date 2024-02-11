@@ -100,7 +100,6 @@ class Record:
         return (bday - now).days
 
   
-
 class AddressBook(UserDict):
     def add_record(self, record):
         self.data[record.name.value] = record
