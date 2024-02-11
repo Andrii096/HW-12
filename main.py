@@ -98,7 +98,6 @@ class Record:
             bday = bday.replace(year=now.year + 1)
         
         return (bday - now).days
-
   
 class AddressBook(UserDict):
     def add_record(self, record):
