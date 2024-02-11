@@ -149,6 +149,66 @@ def input_error(func):
             return "Give me name and phone please"
     return inner
 
+@input_error
+def add_contact(book, name, phone):
+    record = Record(name)
+    record.add_phone(phone)
+    book.add_record(record)
+    return f'Contact {name.capitalize()} has been saved!'
+
+@input_error
+def change_phone(book, name, phone):
+    record = book.find(name)
+    if record:
+        record.edit_phone(record.phones[0].value, phone)
+        return f'Phone number for {name.capitalize()} has been changed!'
+    else:
+        return f"No contact named {name.capitalize()}."
+
+@input_error
+def show_phone(book, name):
+    record = book.find(name)
+    if record:
+        return record.phones[0].value
+    else:
+        return f"No contact named {name.capitalize()}."
+
+@input_error
+def show_all(book):
+    return str(book)
+
+def main():
+    filename = 'address_book.pkl'
+    try:
+        with open(filename, 'rb'):
+            book = AddressBook.load(filename)
+    except FileNotFoundError:
+        book = AddressBook()
+
+    while True:
+        command = input("Enter command: ").lower()
+        
+        if command == "hello":
+            print("How can I help you?")
+        elif command.startswith("add "):
+            _, name, phone = command.split()
+            print(add_contact(book, name, phone))
+        elif command.startswith("change "):
+            _, name, phone = command.split()
+            print(change_phone(book, name, phone))
+        elif command.startswith("phone "):
+            _, name = command.split(maxsplit=1)
+            print(show_phone(book, name))
+        elif command == "show all":
+            print(show_all(book))
+        elif command in ["good bye", "close", "exit"]:
+            book.save(filename)
+            print("Good bye!")
+            break
+        else:
+            print("I don't understand this command!")
+
+
 def main():
     filename = 'address_book.pkl'
     try:
