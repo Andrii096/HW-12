@@ -172,6 +172,14 @@ def show_phone(book, name):
         return f"No contact named {name.capitalize()}."
 
 @input_error
+def find_contact(book, name):
+    record = book.find(name)
+    if record:
+        return str(record)
+    else:
+        return f"No contact named {name.capitalize()}."
+
+@input_error
 def show_all(book):
     return str(book)
 
@@ -199,6 +207,9 @@ def main():
             print(show_phone(book, name))
         elif command == "show all":
             print(show_all(book))
+        elif command.startswith("find "):
+            _, name = command.split(maxsplit=1)
+            print(find_contact(book, name))
         elif command in ["good bye", "close", "exit"]:
             book.save(filename)
             print("Good bye!")
