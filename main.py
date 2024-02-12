@@ -124,7 +124,7 @@ class AddressBook(UserDict):
     def save(self, filename):
         with open(filename, 'wb') as f:
             pickle.dump(self.data, f)
-
+            
     @classmethod
     def load(cls, filename):
         with open(filename, 'rb') as f:
