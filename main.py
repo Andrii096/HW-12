@@ -172,12 +172,20 @@ def show_phone(book, name):
         return f"No contact named {name.capitalize()}."
 
 @input_error
-def find_contact(book, name):
-    record = book.find(name)
-    if record:
-        return str(record)
+def find_contact(book, search_string):
+    result = []
+    for record in book.data.values():
+        if search_string in record.name.value:
+            result.append(str(record))
+        else:
+            for phone in record.phones:
+                if search_string in phone.value:
+                    result.append(str(record))
+                    break
+    if result:
+        return "\n".join(result)
     else:
-        return f"No contact named {name.capitalize()}."
+        return f"No contact with '{search_string}' in the name or phone number."
 
 @input_error
 def show_all(book):
@@ -221,8 +229,8 @@ def main():
             for record in book.data.values():
                 print(record)
         elif command.startswith("find "):
-            _, name = command.split(maxsplit=1)
-            print(find_contact(book, name))
+            _, search_string = command.split(maxsplit=1)
+            print(find_contact(book, search_string))
         elif command in ["good bye", "close", "exit"]:
             book.save(filename)
             print("Good bye!")
